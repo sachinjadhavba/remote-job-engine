@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+*.local
+.DS_Store
+# keep personal / automation folders out of the public repo
+Github/
+CVs/
+Automation/
+Linked IN/
+Freelance profiles/
+*.docx
+*.pdf
+push-to-github.bat
