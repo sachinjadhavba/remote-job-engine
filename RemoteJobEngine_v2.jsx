@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY;
 
 const api = async (path, method = "GET", body = null) => {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -18,15 +19,29 @@ const api = async (path, method = "GET", body = null) => {
 };
 
 const claude = async (prompt, max = 600) => {
+  if (!ANTHROPIC_KEY) {
+    console.error("VITE_ANTHROPIC_KEY not set — add it in Vercel Environment Variables");
+    return "⚠️ AI tools require VITE_ANTHROPIC_KEY to be set in Vercel settings. See setup guide.";
+  }
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_KEY,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
     body: JSON.stringify({
-      model: "claude-sonnet-4-5",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: max,
       messages: [{ role: "user", content: prompt }],
     }),
   });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    console.error("Claude API error:", res.status, err);
+    return `⚠️ AI error (${res.status}): ${err?.error?.message || "check console"}`;
+  }
   const d = await res.json();
   return d.content?.[0]?.text || "";
 };
@@ -294,8 +309,8 @@ export default function App() {
           ))}
           {!jobs.filter(j=>j.match_score>=75).length && (
             <div style={{ color:"#334155", fontSize:"11px" }}>
-              Waiting for job data...<br/>
-              <span style={{ fontSize:"10px" }}>Make.com scenarios need to run first</span>
+              Waiting for high-match jobs (65+)...<br/>
+              <span style={{ fontSize:"10px" }}>n8n workflows auto-fetch every 2 hours</span>
             </div>
           )}
           <button style={{ ...C.btn(), marginTop:"10px", width:"100%", textAlign:"center" }} onClick={() => setTab("jobs")}>
@@ -343,7 +358,7 @@ export default function App() {
         <div style={{ textAlign:"center", padding:"60px", color:"#334155" }}>
           <div style={{ fontSize:"28px", marginBottom:"8px" }}>🔍</div>
           <div>No jobs found yet</div>
-          <div style={{ fontSize:"11px", marginTop:"4px" }}>Make.com scenarios will auto-populate this within 2 hours of activation</div>
+          <div style={{ fontSize:"11px", marginTop:"4px" }}>n8n workflows auto-populate this — new jobs appear within 2 hours</div>
         </div>
       )}
     </div>
