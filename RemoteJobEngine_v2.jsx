@@ -566,28 +566,4 @@ export default function App() {
           </button>
         ))}
         <div style={{ marginLeft:"auto", color:"#1e3a5f", fontSize:"10px" }}>
-          {loading ? "Loading..." : `Last updated ${new Date().toLocaleTimeString()}`}
-        </div>
-      </nav>
-
-      <main style={C.main}>
-        {loading ? (
-          <div style={{ textAlign:"center", padding:"80px", color:"#1e3a5f" }}>
-            <div style={{ fontSize:"32px", marginBottom:"8px" }}>⚡</div>
-            <div>Connecting to Remote Job Engine...</div>
-          </div>
-        ) : (
-          <>
-            {tab==="dashboard" && <Dashboard />}
-            {tab==="jobs" && <JobsTab />}
-            {tab==="applications" && <AppsTab />}
-            {tab==="aitools" && <AITab />}
-          </>
-        )}
-      </main>
-
-      {showAdd && <AddModal />}
-      {selected && <DetailModal item={selected} />}
-    </div>
-  );
-}
+          {loading ? "Loading..." : `Last updated ${new Date().toLocaleTimeString()
