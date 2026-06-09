@@ -1,0 +1,145 @@
+# Remote Job Engine (RJE)
+
+**Automated job search pipeline — built by a banker, not a developer.**
+
+An end-to-end job search automation system built on n8n, Supabase, Claude API, and Telegram. Processes Gmail job alerts, scores them against a real candidate profile, auto-applies by email where possible, and fires Telegram alerts for jobs needing manual attention.
+
+Live on Railway. 16 workflows. Built and operated by Sachin Jadhav.
+
+---
+
+## Why I built this
+
+I spent 19 years in banking. When I decided to move into remote consulting, I realised the job search process itself was a problem worth automating. Most job alerts are noise. Most applications go nowhere because they're generic. I wanted a system that reads every alert, scores it honestly against my actual profile, and only surfaces the ones worth pursuing.
+
+So I built one.
+
+---
+
+## What it does
+
+```
+Gmail job alert → Claude AI scores it → High match? → Auto-apply by email
+                                       → Manual job? → Telegram alert to me
+                                       → All jobs   → Logged to Supabase
+```
+
+Every job alert that lands in my inbox gets processed automatically within minutes.
+
+---
+
+## System architecture
+
+| Layer | Tool | Purpose |
+|---|---|---|
+| Trigger | Gmail + Schedule | Picks up job alert emails |
+| AI Scoring | Claude API (Haiku) | Scores job against my profile |
+| Storage | Supabase | Logs all jobs, scores, status |
+| Alerts | Telegram | Notifies me of high-match jobs |
+| Application | Email (Gmail) | Auto-applies for matched jobs |
+| LinkedIn | LinkedIn API | Posts weekly activity updates |
+| Content | Claude API | Drafts LinkedIn posts, cover letters |
+
+---
+
+## 16 Workflows (S1–S16)
+
+| # | Workflow | What it does |
+|---|---|---|
+| S1 | Gmail Job Alert Intake | Reads unread job alert emails, extracts job details |
+| S2 | Claude Job Scorer | Scores each job 0–100 against my profile |
+| S3 | High Match Filter | Filters jobs scoring 75+ |
+| S4 | Supabase Logger | Logs all jobs with scores to database |
+| S5 | Telegram Alert | Fires Telegram message for high-match jobs |
+| S6 | Email Auto-Apply | Sends application email for matched jobs |
+| S7 | CV Tailor Trigger | Triggers CV tailoring for 80+ score jobs |
+| S8 | CV Tailor (Claude) | Tailors CV1 or CV2 based on job type |
+| S9 | Cover Letter Writer | Writes personalised cover letter per job |
+| S10 | Application Tracker | Updates application status in Supabase |
+| S11 | Follow-up Scheduler | Schedules follow-up emails 7 days after apply |
+| S12 | Follow-up Sender | Sends follow-up email if no response |
+| S13 | LinkedIn Post Drafter | Drafts weekly LinkedIn post via Claude |
+| S14 | LinkedIn Post Merger | Combines post drafts for review |
+| S15 | Weekly Report | Sends weekly summary to Telegram |
+| S16 | Dead Job Cleanup | Archives jobs older than 30 days |
+
+---
+
+## Claude scoring prompt — my actual profile
+
+The Claude node scores every job against this profile:
+
+```
+Sachin Jadhav — Banking Domain Consultant
+19 years SME/MSME credit appraisal and portfolio management
+Core banking: Finacle (14+ years across IndusInd, South Indian Bank, ING Vysya, Axis Bank)
+Systems: Loan Origination Systems (RLOS/CLOS), CRM, Flexcube
+Products: Working Capital, LAP, LRD, Commodity Finance, Agri Lending
+Tools: Power BI, Excel Advanced, SQL (basic), Python (basic)
+Current: Founder, FinsightOne (live MSME credit advisory platform)
+
+Target roles:
+- Banking domain consultant (Finacle implementation teams)
+- Credit advisory / MSME lending consultant
+- Portfolio analytics and MIS roles
+- Remote contract — USD/AED preferred
+
+NOT targeting:
+- Basel II/III or IFRS9 modelling roles
+- Pure quant / risk modelling
+- On-site permanent roles in India
+```
+
+Score 80+ → auto-apply. Score 75–79 → Telegram alert. Below 75 → log only.
+
+---
+
+## Tech stack
+
+- **n8n** — workflow automation (Railway hosted)
+- **Supabase** — PostgreSQL database for job tracking
+- **Claude API** — Haiku model for scoring and content generation
+- **Gmail OAuth** — job alert intake and application sending
+- **Telegram Bot** — real-time alerts and weekly reports
+
+---
+
+## Infrastructure
+
+```
+n8n instance:     n8n-production-ccb2.up.railway.app
+Supabase project: bqyycvzrqvmaegofuqns.supabase.co
+Telegram Chat ID: 7337997557
+Claude model:     claude-haiku-4-5-20251001
+```
+
+---
+
+## Status
+
+| Component | Status |
+|---|---|
+| S1–S12 workflows | Published |
+| S13–S16 workflows | Published |
+| Gmail OAuth | Pending setup |
+| Supabase logging | Live |
+| Telegram alerts | Live |
+| Auto-apply | Live for email-apply jobs |
+
+---
+
+## What I learned building this
+
+I am not a developer. I built this entirely using n8n's visual workflow editor, Claude API, and a lot of trial and error. Every node was configured manually. Every bug was debugged by reading the execution log and fixing one thing at a time.
+
+The point was not to write clean code. The point was to solve a real problem — and it does.
+
+---
+
+## About
+
+**Sachin Jadhav** — 19 years banking, now building.
+
+- Live platform: [finsightone.co](https://finsightone.co)
+- LinkedIn: [linkedin.com/in/sachin-jadhav-consultant](https://linkedin.com/in/sachin-jadhav-consultant)
+- Email: sachinjadhav.ba@gmail.com
